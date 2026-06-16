@@ -17,7 +17,7 @@ app.get('/health', (req, res) => {
 });
 
 // ─────────────────────────────────────────
-// AUTH — REGISTER (Simplified)
+// AUTH — REGISTER
 // ─────────────────────────────────────────
 app.post('/auth/register', (req, res) => {
     const { username, passwordHash } = req.body; // App sends pre-hashed pass
@@ -94,10 +94,10 @@ app.post('/notes/upsert', authenticateToken, (req, res) => {
     const existing = db.prepare('SELECT id, updated_at FROM notes WHERE id = ?').get(id);
 
     if (!existing) {
-        // Note does not exist — insert it
-        db.prepare(`  
-            INSERT INTO notes (id, username, title_ciphertext, content_ciphertext, wrapped_note_key, updated_at, deleted)  
-            VALUES (?, ?, ?, ?, ?, ?, 0)  
+        // If note does not exist — insert it
+        db.prepare(`
+            INSERT INTO notes (id, username, title_ciphertext, content_ciphertext, wrapped_note_key, updated_at, deleted)
+            VALUES (?, ?, ?, ?, ?, ?, 0)
         `).run(id, req.username, titleCiphertext, contentCiphertext, wrappedNoteKey, updatedAt);
 
         return res.status(201).json({ message: 'Note created', id });
@@ -105,14 +105,14 @@ app.post('/notes/upsert', authenticateToken, (req, res) => {
 
     // Note exists — apply latest write wins
     if (updatedAt >= existing.updated_at) {
-        db.prepare(`  
-            UPDATE notes  
-            SET title_ciphertext = ?,  
-                content_ciphertext = ?,  
-                wrapped_note_key = ?,  
-                updated_at = ?,  
-                deleted = 0  
-            WHERE id = ? AND username = ?  
+        db.prepare(`
+            UPDATE notes
+            SET title_ciphertext = ?,
+                content_ciphertext = ?,
+                wrapped_note_key = ?,
+                updated_at = ?,
+                deleted = 0
+            WHERE id = ? AND username = ?
         `).run(titleCiphertext, contentCiphertext, wrappedNoteKey, updatedAt, id, req.username);
 
         return res.json({ message: 'Note updated', id });
@@ -141,11 +141,11 @@ app.post('/notes/delete', authenticateToken, (req, res) => {
 
     // Only delete if incoming timestamp is newer or equal
     if (updatedAt >= existing.updated_at) {
-        db.prepare(`  
-            UPDATE notes  
-            SET deleted = 1,  
-                updated_at = ?  
-            WHERE id = ? AND username = ?  
+        db.prepare(`
+            UPDATE notes
+            SET deleted = 1,
+                updated_at = ?
+            WHERE id = ? AND username = ?
         `).run(updatedAt, id, req.username);
 
         return res.json({ message: 'Note marked as deleted', id });

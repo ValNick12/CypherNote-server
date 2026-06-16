@@ -9,7 +9,6 @@ if (!fs.existsSync('./database')) {
 
 const db = new Database(process.env.DB_PATH);
 
-// Enable WAL mode for better performance
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
