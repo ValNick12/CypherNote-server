@@ -15,20 +15,20 @@ db.pragma('foreign_keys = ON');
 // Create tables
 db.exec(`
     CREATE TABLE IF NOT EXISTS users (
-        username     TEXT PRIMARY KEY,
+        username TEXT PRIMARY KEY,
         password_hash TEXT NOT NULL,
-        key_salt     TEXT NOT NULL,
-        created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+        key_salt TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS notes (
-        id                   TEXT PRIMARY KEY,
-        username             TEXT NOT NULL,
-        title_ciphertext     TEXT,
-        content_ciphertext   TEXT,
-        wrapped_note_key     TEXT,
-        updated_at           INTEGER NOT NULL,
-        deleted              INTEGER DEFAULT 0,
+        id TEXT PRIMARY KEY,
+        username TEXT NOT NULL,
+        title_ciphertext TEXT,
+        content_ciphertext TEXT,
+        wrapped_note_key TEXT,
+        updated_at INTEGER NOT NULL,
+        deleted INTEGER DEFAULT 0,
         FOREIGN KEY (username) REFERENCES users(username)
     );
 `);
