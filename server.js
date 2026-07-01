@@ -36,7 +36,7 @@ app.post('/auth/register', (req, res) => {
         VALUES (?, ?, ?)
     `).run(username, passwordHash, keySalt);
 
-    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '5m' });
 
     res.status(201).json({ token, keySalt });
 });
@@ -54,7 +54,7 @@ app.post('/auth/login', (req, res) => {
         return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '5m' });
 
     res.json({ token, keySalt: user.key_salt });
 });
